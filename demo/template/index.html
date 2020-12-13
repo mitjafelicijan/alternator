@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    {{template "head.html"}}
+
+    <title>{{.Title}}</title>
+    <meta name="description" content="{{.Description}}">
+  </head>
+
+  <body>
+
+    {{template "navigation.html"}}
+
+    <main class="wrapper">
+      <nav itemscope itemtype="https://schema.org/SiteNavigationElement">
+        <meta itemprop="name" content="Article list">
+
+        <h2>Post list</h2>
+        <ul class="post-list">
+          {{range $index, $post := .Posts}}
+          <li>
+            <a href="{{$post.Slug}}" title="{{$post.Title}}" itemprop="url">{{$post.Title}}</a>
+          </li>
+          {{end}}
+        </ul>
+      </nav>
+    </main>
+
+    {{template "footer.html"}}
+
+    {{template "includes.html"}}
+
+  </body>
+
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    {{template "head.html"}}
+
+    <title>{{.Title}}</title>
+    <meta name="description" content="{{.Description}}">
+  </head>
+
+  <body>
+
+    {{template "navigation.html"}}
+
+
+
+    <main class="wrapper">
+
+      {{if .Tags}}
+      <nav>
+        <strong>Tags:</strong>
+        {{range .Tags}}
+        <a href="/tag/{{.}}">{{.}}</a>
+        {{end}}
+      </nav>
+      {{end}}
+
+      <article itemtype="http://schema.org/Article">
+        <header>
+          <h1 itemtype="headline">{{.Title}}</h1>
+        </header>
+        <div>
+          {{.Content}}
+        </div>
+      </article>
+    </main>
+
+    {{template "footer.html"}}
+
+    {{template "includes.html"}}
+
+  </body>
+
+</html>
