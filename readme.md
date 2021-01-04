@@ -11,6 +11,8 @@
 
 ## Install as a Systemd service
 
+**Do not use yet!**
+
 ```bash
 cp altenator.service /lib/systemd/system/altenator.service
 

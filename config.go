@@ -24,12 +24,13 @@ type Config struct {
 	RSS struct {
 		Domain string
 		Author string
+		Email  string
 	}
 }
 
 // ReadConfig ...
 func ReadConfig() *ini.File {
-	configFile, err = ini.Load("./config.ini")
+	configFile, err = ini.Load(fmt.Sprintf("%s/config.ini", GetWorkingDirectory()))
 	if err != nil {
 		fmt.Printf("Fail to read file: %v", err)
 		os.Exit(1)

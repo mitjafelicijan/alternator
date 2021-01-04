@@ -10,13 +10,16 @@ import (
 	"path/filepath"
 	"reflect"
 	"text/template"
+	"time"
 
+	"github.com/gorilla/feeds"
 	"github.com/otiai10/copy"
 	"github.com/yuin/goldmark"
 	meta "github.com/yuin/goldmark-meta"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer/html"
+	"gopkg.in/ini.v1"
 )
 
 var md goldmark.Markdown
@@ -27,6 +30,7 @@ type Post struct {
 	Title       string
 	Description string
 	Slug        string
+	Created     string
 	Content     string
 	Listing     bool
 	Tags        interface{}
@@ -157,7 +161,9 @@ func SliceExists(slice interface{}, item interface{}) bool {
 }
 
 // GenerateHTMLFiles ...
-func GenerateHTMLFiles(defaultTitle string, defaultDescription string, publicFolder string) {
+func GenerateHTMLFiles(configFile *ini.File) {
+	publicFolder := fmt.Sprintf("%s/public", GetWorkingDirectory())
+
 	CleanPublicDirectory(publicFolder)
 
 	files, err := ListMarkdownFiles("./posts")
@@ -184,6 +190,7 @@ func GenerateHTMLFiles(defaultTitle string, defaultDescription string, publicFol
 				Description: meta["Description"].(string),
 				Slug:        fmt.Sprintf("%s.html", meta["Slug"].(string)),
 				Content:     html,
+				Created:     meta["Created"].(string),
 				Listing:     meta["Listing"].(bool),
 				Tags:        meta["Tags"],
 			}
@@ -215,6 +222,9 @@ func GenerateHTMLFiles(defaultTitle string, defaultDescription string, publicFol
 		}
 
 	}
+
+	defaultTitle := configFile.Section("content").Key("title").String()
+	defaultDescription := configFile.Section("content").Key("description").String()
 
 	// generate tag index and tag listings
 
@@ -254,6 +264,47 @@ func GenerateHTMLFiles(defaultTitle string, defaultDescription string, publicFol
 
 	}
 
+	// generate rss feed
+
+	domain := configFile.Section("rss").Key("domain").String()
+	author := configFile.Section("rss").Key("author").String()
+	email := configFile.Section("rss").Key("email").String()
+
+	now := time.Now()
+	feed := &feeds.Feed{
+		Title:       defaultTitle,
+		Link:        &feeds.Link{Href: domain},
+		Description: defaultDescription,
+		Author:      &feeds.Author{Name: author, Email: email},
+		Created:     now,
+	}
+
+	feed.Items = []*feeds.Item{}
+	for _, post := range posts {
+		feedItem := &feeds.Item{
+			Title:       post.Title,
+			Link:        &feeds.Link{Href: fmt.Sprintf("%s/%s", domain, post.Slug)},
+			Description: post.Description,
+			Content:     post.Content,
+			Author:      &feeds.Author{Name: author, Email: email},
+			Created:     now,
+		}
+
+		feed.Items = append(feed.Items, feedItem)
+	}
+
+	rss, err := feed.ToRss()
+	if err != nil {
+		log.Fatal(err)
+	}
+	writeContentToFile(string(rss), fmt.Sprintf("%s/feed.rss", publicFolder))
+
+	json, err := feed.ToJSON()
+	if err != nil {
+		log.Fatal(err)
+	}
+	writeContentToFile(string(json), fmt.Sprintf("%s/feed.json", publicFolder))
+
 	// generate index.html file
 
 	log.Println("Generating index.html file ... ")
@@ -282,6 +333,8 @@ func GenerateHTMLFiles(defaultTitle string, defaultDescription string, publicFol
 	CopyFile("./template/favicon.ico", fmt.Sprintf("%s/favicon.ico", publicFolder))
 
 	CopyAssets(publicFolder)
+
+	fmt.Println()
 }
 
 // CopyAssets ...

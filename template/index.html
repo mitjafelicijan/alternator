@@ -2,7 +2,7 @@
 <html lang="en">
 
   <head>
-    {{template "_head.html"}}
+    {{template "_meta.html"}}
 
     <title>{{.Title}}</title>
     <meta name="description" content="{{.Description}}">
@@ -20,14 +20,15 @@
         <ul class="post-list">
           {{range $index, $post := .Posts}}
           <li>
+            <time>{{.Created}}</time>
+
             <a href="/{{$post.Slug}}" title="{{$post.Title}}" itemprop="url">
-              <h5>{{$post.Title}}</h5>
+              <h2>{{$post.Title}}</h2>
             </a>
 
             <!-- lists all tags available in this posts -->
             {{if $post.Tags}}
-            <nav>
-              <span>Tags:</span>
+            <nav class="tags">
               {{range $post.Tags}}
               <a href="/tags/{{.}}.html" rel="tag">{{.}}</a>
               {{end}}
@@ -41,7 +42,7 @@
 
       <!-- lists all tags available in all posts -->
       {{if .Tags}}
-      <nav>
+      <nav class="tags top-margin">
         <strong>All tags on site:</strong>
         {{range .Tags}}
         <a href="/tags/{{.}}.html" rel="tag">{{.}}</a>

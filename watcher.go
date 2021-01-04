@@ -12,8 +12,8 @@ import (
 var watcher *fsnotify.Watcher
 
 // InitializeWatcher ...
-func InitializeWatcher(defaultTitle string, defaultDescription string, publicFolder string) {
-	directory := "./posts"
+func InitializeWatcher() {
+	directory := fmt.Sprintf("%s/posts", GetWorkingDirectory())
 
 	watcher, _ = fsnotify.NewWatcher()
 	defer watcher.Close()
@@ -28,8 +28,7 @@ func InitializeWatcher(defaultTitle string, defaultDescription string, publicFol
 		for {
 			select {
 			case _ = <-watcher.Events:
-				GenerateHTMLFiles(defaultTitle, defaultDescription, publicFolder)
-				// log.Printf("Event %#v\n", event)
+				GenerateHTMLFiles(configFile)
 
 			case err := <-watcher.Errors:
 				log.Println("Error", err)

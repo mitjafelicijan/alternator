@@ -7,8 +7,9 @@ import (
 )
 
 // StartHTTPServer ...
-func StartHTTPServer(port int, dir string) {
-	fs := http.FileServer(http.Dir(dir))
+func StartHTTPServer(port int) {
+
+	fs := http.FileServer(http.Dir(fmt.Sprintf("%s/public", GetWorkingDirectory())))
 	http.Handle("/", fs)
 
 	log.Println(fmt.Sprintf("Listening on http://0.0.0.0:%d", port))

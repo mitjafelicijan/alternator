@@ -2,7 +2,7 @@
 <html lang="en">
 
   <head>
-    {{template "_head.html"}}
+    {{template "_meta.html"}}
 
     <title>{{.Title}}</title>
     <meta name="description" content="{{.Description}}">
@@ -13,23 +13,27 @@
     {{template "_navigation.html"}}
 
     <main class="wrapper">
-
-      {{if .Tags}}
-      <nav>
-        <strong>Tags:</strong>
-        {{range .Tags}}
-        <a href="/tags/{{.}}.html" rel="tag">{{.}}</a>
-        {{end}}
-      </nav>
-      {{end}}
-
       <article itemtype="http://schema.org/Article">
         <header>
           <h1 itemtype="headline">{{.Title}}</h1>
+
+          <time>{{.Created}}</time>
+
+
         </header>
         <div>
           {{.Content}}
         </div>
+
+        <!-- lists all tags available in this posts -->
+        {{if .Tags}}
+        <nav class="tags">
+          {{range .Tags}}
+          <a href="/tags/{{.}}.html" rel="tag">{{.}}</a>
+          {{end}}
+        </nav>
+        {{end}}
+
       </article>
     </main>
 
