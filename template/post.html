@@ -2,7 +2,7 @@
 <html lang="en">
 
   <head>
-    {{template "head.html"}}
+    {{template "_head.html"}}
 
     <title>{{.Title}}</title>
     <meta name="description" content="{{.Description}}">
@@ -10,9 +10,7 @@
 
   <body>
 
-    {{template "navigation.html"}}
-
-
+    {{template "_navigation.html"}}
 
     <main class="wrapper">
 
@@ -20,7 +18,7 @@
       <nav>
         <strong>Tags:</strong>
         {{range .Tags}}
-        <a href="/tag/{{.}}">{{.}}</a>
+        <a href="/tags/{{.}}.html" rel="tag">{{.}}</a>
         {{end}}
       </nav>
       {{end}}
@@ -35,9 +33,9 @@
       </article>
     </main>
 
-    {{template "footer.html"}}
+    {{template "_footer.html"}}
 
-    {{template "includes.html"}}
+    {{template "_includes.html"}}
 
   </body>
 

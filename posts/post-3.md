@@ -1,7 +1,8 @@
 ---
-Title: Post 3
+Title: Quisque sodales vulputate eros in laoreet - Post 3
 Description: Post 3
 Slug: post-3
+Listing: true
 Tags: []
 ---
 

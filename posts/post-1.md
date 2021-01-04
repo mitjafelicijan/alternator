@@ -1,7 +1,8 @@
 ---
-Title: Post 1
+Title: Lorem ipsum dolor sit amet - Post 1
 Description: Post 1
 Slug: post-1
+Listing: true
 Tags: [tag1, tag2]
 ---
 

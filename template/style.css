@@ -65,6 +65,11 @@ main {
   padding: 5px 0px;
 }
 
+.post-list li h5 {
+  margin: 0;
+  font-weight: 500;
+}
+
 /* footer */
 
 footer {

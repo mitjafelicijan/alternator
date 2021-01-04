@@ -1,8 +1,9 @@
 ---
-Title: Post 2
+Title: Aenean nibh lorem, pretium et augue sed - Post 2
 Description: Post 2
 Slug: post-2
-Tags: [sim, some, sum]
+Listing: true
+Tags: [sim, some, sum, tag1]
 ---
 
 ## Paragraph

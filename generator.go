@@ -28,6 +28,7 @@ type Post struct {
 	Description string
 	Slug        string
 	Content     string
+	Listing     bool
 	Tags        interface{}
 }
 
@@ -36,6 +37,16 @@ type Index struct {
 	Title       string
 	Description string
 	Posts       []Post
+	Tags        interface{}
+}
+
+// Tag ...
+type Tag struct {
+	Title       string
+	Tag         string
+	Description string
+	Posts       []Post
+	Tags        interface{}
 }
 
 // InitializeMarkdownParser ...
@@ -118,6 +129,33 @@ func ConvertMarkdownFileToHTML(filepath string) (string, map[string]interface{},
 	return string(buf.String()), meta, nil
 }
 
+// FindItemInSlice ...
+func FindItemInSlice(slice []string, val string) (int, bool) {
+	for i, item := range slice {
+		if item == val {
+			return i, true
+		}
+	}
+	return -1, false
+}
+
+// SliceExists ..
+func SliceExists(slice interface{}, item interface{}) bool {
+	s := reflect.ValueOf(slice)
+
+	if s.Kind() != reflect.Slice {
+		panic("SliceExists() given a non-slice type")
+	}
+
+	for i := 0; i < s.Len(); i++ {
+		if s.Index(i).Interface() == item {
+			return true
+		}
+	}
+
+	return false
+}
+
 // GenerateHTMLFiles ...
 func GenerateHTMLFiles(defaultTitle string, defaultDescription string, publicFolder string) {
 	CleanPublicDirectory(publicFolder)
@@ -139,44 +177,84 @@ func GenerateHTMLFiles(defaultTitle string, defaultDescription string, publicFol
 	for _, file := range files {
 		html, meta, _ := ConvertMarkdownFileToHTML(file)
 
-		post := Post{
-			File:        file,
-			Title:       meta["Title"].(string),
-			Description: meta["Description"].(string),
-			Slug:        fmt.Sprintf("%s.html", meta["Slug"].(string)),
-			Content:     html,
-			Tags:        meta["Tags"],
+		if meta["Listing"].(bool) {
+			post := Post{
+				File:        file,
+				Title:       meta["Title"].(string),
+				Description: meta["Description"].(string),
+				Slug:        fmt.Sprintf("%s.html", meta["Slug"].(string)),
+				Content:     html,
+				Listing:     meta["Listing"].(bool),
+				Tags:        meta["Tags"],
+			}
+
+			// append tag to all tags if not there already
+			for _, tag := range meta["Tags"].([]interface{}) {
+				_, found := FindItemInSlice(tags, tag.(string))
+				if !found {
+					fmt.Println("Value not found in slice")
+					tags = append(tags, tag.(string))
+				}
+			}
+
+			posts = append(posts, post)
+
+			log.Println(fmt.Sprintf("Generating %s.html file ... ", post.Slug))
+			output, err := os.Create(fmt.Sprintf("%s/%s", publicFolder, post.Slug))
+			if err != nil {
+				log.Println("Create file: ", err)
+				return
+			}
+
+			err = tpl.ExecuteTemplate(output, "post.html", post)
+			if err != nil {
+				panic(err)
+			}
+
+			output.Close()
 		}
 
-		// tags = append(tags, "item")
+	}
 
-		fmt.Println(reflect.ValueOf(meta["Tags"]).Kind())
+	// generate tag index and tag listings
 
-		for key, value := range meta["Tags"] {
-			fmt.Println(key, value)
-		}
+	_ = os.Mkdir(fmt.Sprintf("%s/tags", publicFolder), 0777)
 
-		//fmt.Println(meta["Tags"].([]string))
-		// fmt.Println(meta["Tags"])
+	for _, tag := range tags {
+		log.Println(fmt.Sprintf("Generating tags/%s.html file ... ", tag))
 
-		posts = append(posts, post)
-
-		log.Println(fmt.Sprintf("Generating %s.html file ... ", post.Slug))
-		output, err := os.Create(fmt.Sprintf("%s/%s", publicFolder, post.Slug))
+		output, err := os.Create(fmt.Sprintf("%s/tags/%s.html", publicFolder, tag))
 		if err != nil {
 			log.Println("Create file: ", err)
 			return
 		}
 
-		err = tpl.ExecuteTemplate(output, "post.html", post)
+		tagPosts := []Post{}
+
+		for _, post := range posts {
+			if SliceExists(post.Tags, tag) {
+				tagPosts = append(tagPosts, post)
+			}
+		}
+
+		tag := Tag{
+			Title:       defaultTitle,
+			Tag:         tag,
+			Description: defaultDescription,
+			Posts:       tagPosts,
+			Tags:        tags,
+		}
+
+		err = tpl.ExecuteTemplate(output, "tag.html", tag)
 		if err != nil {
 			panic(err)
 		}
 
 		output.Close()
+
 	}
 
-	fmt.Println(tags)
+	// generate index.html file
 
 	log.Println("Generating index.html file ... ")
 	output, err := os.Create(fmt.Sprintf("%s/index.html", publicFolder))
@@ -189,6 +267,7 @@ func GenerateHTMLFiles(defaultTitle string, defaultDescription string, publicFol
 		Title:       defaultTitle,
 		Description: defaultDescription,
 		Posts:       posts,
+		Tags:        tags,
 	}
 
 	err = tpl.ExecuteTemplate(output, "index.html", index)
