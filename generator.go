@@ -218,7 +218,8 @@ func GenerateHTMLFiles(configFile *ini.File) {
 		output.Close()
 
 		if meta["Listing"].(bool) {
-			posts = append(posts, post)
+			//posts = append(posts, post)
+			posts = append([]Post{post}, posts...)
 		}
 	}
 
