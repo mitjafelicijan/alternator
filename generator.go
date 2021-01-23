@@ -183,44 +183,43 @@ func GenerateHTMLFiles(configFile *ini.File) {
 	for _, file := range files {
 		html, meta, _ := ConvertMarkdownFileToHTML(file)
 
-		if meta["Listing"].(bool) {
-			post := Post{
-				File:        file,
-				Title:       meta["Title"].(string),
-				Description: meta["Description"].(string),
-				Slug:        fmt.Sprintf("%s.html", meta["Slug"].(string)),
-				Content:     html,
-				Created:     meta["Created"].(string),
-				Listing:     meta["Listing"].(bool),
-				Tags:        meta["Tags"],
-			}
-
-			// append tag to all tags if not there already
-			for _, tag := range meta["Tags"].([]interface{}) {
-				_, found := FindItemInSlice(tags, tag.(string))
-				if !found {
-					fmt.Println("Value not found in slice")
-					tags = append(tags, tag.(string))
-				}
-			}
-
-			posts = append(posts, post)
-
-			log.Println(fmt.Sprintf("Generating %s.html file ... ", post.Slug))
-			output, err := os.Create(fmt.Sprintf("%s/%s", publicFolder, post.Slug))
-			if err != nil {
-				log.Println("Create file: ", err)
-				return
-			}
-
-			err = tpl.ExecuteTemplate(output, "post.html", post)
-			if err != nil {
-				panic(err)
-			}
-
-			output.Close()
+		post := Post{
+			File:        file,
+			Title:       meta["Title"].(string),
+			Description: meta["Description"].(string),
+			Slug:        fmt.Sprintf("%s.html", meta["Slug"].(string)),
+			Content:     html,
+			Created:     meta["Created"].(string),
+			Listing:     meta["Listing"].(bool),
+			Tags:        meta["Tags"],
 		}
 
+		// append tag to all tags if not there already
+		for _, tag := range meta["Tags"].([]interface{}) {
+			_, found := FindItemInSlice(tags, tag.(string))
+			if !found {
+				fmt.Println("Value not found in slice")
+				tags = append(tags, tag.(string))
+			}
+		}
+
+		log.Println(fmt.Sprintf("Generating %s.html file ... ", post.Slug))
+		output, err := os.Create(fmt.Sprintf("%s/%s", publicFolder, post.Slug))
+		if err != nil {
+			log.Println("Create file: ", err)
+			return
+		}
+
+		err = tpl.ExecuteTemplate(output, "post.html", post)
+		if err != nil {
+			panic(err)
+		}
+
+		output.Close()
+
+		if meta["Listing"].(bool) {
+			posts = append(posts, post)
+		}
 	}
 
 	defaultTitle := configFile.Section("content").Key("title").String()
