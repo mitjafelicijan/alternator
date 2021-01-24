@@ -8,7 +8,7 @@ import (
 )
 
 func writeContentToFile(content string, path string) {
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY, 0700)
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Println(err)
 	}

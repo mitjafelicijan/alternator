@@ -34,6 +34,7 @@ type Post struct {
 	Content     string
 	Listing     bool
 	Tags        interface{}
+	Timestamp   int64
 }
 
 // Index ...
@@ -42,6 +43,7 @@ type Index struct {
 	Description string
 	Posts       []Post
 	Tags        interface{}
+	Timestamp   int64
 }
 
 // Tag ...
@@ -51,6 +53,7 @@ type Tag struct {
 	Description string
 	Posts       []Post
 	Tags        interface{}
+	Timestamp   int64
 }
 
 // InitializeMarkdownParser ...
@@ -163,6 +166,7 @@ func SliceExists(slice interface{}, item interface{}) bool {
 // GenerateHTMLFiles ...
 func GenerateHTMLFiles(configFile *ini.File) {
 	publicFolder := fmt.Sprintf("%s/public", GetWorkingDirectory())
+	timestamp := time.Now().Unix()
 
 	CleanPublicDirectory(publicFolder)
 
@@ -192,6 +196,7 @@ func GenerateHTMLFiles(configFile *ini.File) {
 			Created:     meta["Created"].(string),
 			Listing:     meta["Listing"].(bool),
 			Tags:        meta["Tags"],
+			Timestamp:   timestamp,
 		}
 
 		// append tag to all tags if not there already
@@ -253,6 +258,7 @@ func GenerateHTMLFiles(configFile *ini.File) {
 			Description: defaultDescription,
 			Posts:       tagPosts,
 			Tags:        tags,
+			Timestamp:   timestamp,
 		}
 
 		err = tpl.ExecuteTemplate(output, "tag.html", tag)
@@ -319,6 +325,7 @@ func GenerateHTMLFiles(configFile *ini.File) {
 		Description: defaultDescription,
 		Posts:       posts,
 		Tags:        tags,
+		Timestamp:   timestamp,
 	}
 
 	err = tpl.ExecuteTemplate(output, "index.html", index)
