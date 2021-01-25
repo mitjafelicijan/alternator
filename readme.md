@@ -16,7 +16,7 @@ wget https://github.com/mitjafelicijan/alternator/raw/master/release/linux-arm/a
 # add executable bit
 chmod +x alternator
 
-# check if bin is working
+# check if binary is working
 ./alternator --version
 ```
 
