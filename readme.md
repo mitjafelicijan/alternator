@@ -5,7 +5,7 @@
 
 ## Download binary
 
-```
+```sh
 # amd64
 wget https://github.com/mitjafelicijan/alternator/raw/master/release/linux-amd64/alternator
 
