@@ -7,10 +7,10 @@
 ## Download binary
 
 ```sh
-# amd64
+# linux/amd64
 wget https://github.com/mitjafelicijan/alternator/raw/master/release/linux-amd64/alternator
 
-# arm
+# linux/arm
 wget https://github.com/mitjafelicijan/alternator/raw/master/release/linux-arm/alternator
 
 # add executable bit
