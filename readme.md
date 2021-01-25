@@ -3,6 +3,22 @@
 1. [Start using alternator](#start-using-alternator)
 2. [Install as a Systemd service](#install-as-a-systemd-service)
 
+## Download binary
+
+```
+# amd64
+wget https://github.com/mitjafelicijan/alternator/raw/master/release/linux-amd64/alternator
+
+# arm
+wget https://github.com/mitjafelicijan/alternator/raw/master/release/linux-arm/alternator
+
+# add executable bit
+chmod +x alternator
+
+# check if bin is working
+./alternator --version
+```
+
 ## Start using alternator
 
 1. Add alternator to system path.
