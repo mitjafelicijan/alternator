@@ -1,7 +1,8 @@
 # Altenator - Minimal STG
 
-1. [Start using alternator](#start-using-alternator)
-2. [Install as a Systemd service](#install-as-a-systemd-service)
+- [Download binary](#download-binary)
+- [Start using alternator](#start-using-alternator)
+- [Install as a Systemd service](#install-as-a-systemd-service)
 
 ## Download binary
 
