@@ -26,15 +26,17 @@ var md goldmark.Markdown
 
 // Post ...
 type Post struct {
-	File        string
-	Title       string
-	Description string
-	Slug        string
-	Created     string
-	Content     string
-	Listing     bool
-	Tags        interface{}
-	Timestamp   int64
+	File             string
+	Title            string
+	Description      string
+	Slug             string
+	Created          string
+	CreatedFormatted string
+	CreatedRFC3339   string
+	Content          string
+	Listing          bool
+	Tags             interface{}
+	Timestamp        int64
 }
 
 // Index ...
@@ -70,6 +72,7 @@ func InitializeMarkdownParser() {
 		goldmark.WithRendererOptions(
 			html.WithHardWraps(),
 			html.WithXHTML(),
+			html.WithUnsafe(),
 		),
 		goldmark.WithExtensions(
 			meta.Meta,
@@ -187,16 +190,20 @@ func GenerateHTMLFiles(configFile *ini.File) {
 	for _, file := range files {
 		html, meta, _ := ConvertMarkdownFileToHTML(file)
 
+		t, _ := time.Parse("2006-01-02", meta["Created"].(string))
+
 		post := Post{
-			File:        file,
-			Title:       meta["Title"].(string),
-			Description: meta["Description"].(string),
-			Slug:        fmt.Sprintf("%s.html", meta["Slug"].(string)),
-			Content:     html,
-			Created:     meta["Created"].(string),
-			Listing:     meta["Listing"].(bool),
-			Tags:        meta["Tags"],
-			Timestamp:   timestamp,
+			File:             file,
+			Title:            meta["Title"].(string),
+			Description:      meta["Description"].(string),
+			Slug:             fmt.Sprintf("%s.html", meta["Slug"].(string)),
+			Content:          html,
+			Created:          meta["Created"].(string),
+			CreatedFormatted: t.Format("02, January 2006"),
+			CreatedRFC3339:   t.Format(time.RFC3339),
+			Listing:          meta["Listing"].(bool),
+			Tags:             meta["Tags"],
+			Timestamp:        timestamp,
 		}
 
 		// append tag to all tags if not there already
@@ -287,13 +294,15 @@ func GenerateHTMLFiles(configFile *ini.File) {
 
 	feed.Items = []*feeds.Item{}
 	for _, post := range posts {
+		t, _ := time.Parse(time.RFC3339, post.CreatedRFC3339)
+
 		feedItem := &feeds.Item{
 			Title:       post.Title,
 			Link:        &feeds.Link{Href: fmt.Sprintf("%s/%s", domain, post.Slug)},
 			Description: post.Description,
 			Content:     post.Content,
 			Author:      &feeds.Author{Name: author, Email: email},
-			Created:     now,
+			Created:     t,
 		}
 
 		feed.Items = append(feed.Items, feedItem)
