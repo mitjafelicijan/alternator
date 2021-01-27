@@ -10,6 +10,7 @@
 // template/favicon.ico
 // template/index.html
 // template/post.html
+// template/robots.txt
 // template/script.js
 // template/style.css
 // template/tag.html
@@ -283,6 +284,26 @@ func templatePostHtml() (*asset, error) {
 	return a, nil
 }
 
+var _templateRobotsTxt = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x0a\x2d\x4e\x2d\xd2\x4d\x4c\x4f\xcd\x2b\xb1\x52\xd0\xe2\x72\xcc\xc9\xc9\x2f\xb7\x52\xd0\xe7\x02\x04\x00\x00\xff\xff\x08\x7b\x47\x32\x17\x00\x00\x00")
+
+func templateRobotsTxtBytes() ([]byte, error) {
+	return bindataRead(
+		_templateRobotsTxt,
+		"template/robots.txt",
+	)
+}
+
+func templateRobotsTxt() (*asset, error) {
+	bytes, err := templateRobotsTxtBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "template/robots.txt", size: 23, mode: os.FileMode(436), modTime: time.Unix(1611739536, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _templateScriptJs = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xe2\x02\x04\x00\x00\xff\xff\x93\x06\xd7\x32\x01\x00\x00\x00")
 
 func templateScriptJsBytes() ([]byte, error) {
@@ -465,6 +486,7 @@ var _bindata = map[string]func() (*asset, error){
 	"template/favicon.ico": templateFaviconIco,
 	"template/index.html": templateIndexHtml,
 	"template/post.html": templatePostHtml,
+	"template/robots.txt": templateRobotsTxt,
 	"template/script.js": templateScriptJs,
 	"template/style.css": templateStyleCss,
 	"template/tag.html": templateTagHtml,
@@ -531,6 +553,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"favicon.ico": &bintree{templateFaviconIco, map[string]*bintree{}},
 		"index.html": &bintree{templateIndexHtml, map[string]*bintree{}},
 		"post.html": &bintree{templatePostHtml, map[string]*bintree{}},
+		"robots.txt": &bintree{templateRobotsTxt, map[string]*bintree{}},
 		"script.js": &bintree{templateScriptJs, map[string]*bintree{}},
 		"style.css": &bintree{templateStyleCss, map[string]*bintree{}},
 		"tag.html": &bintree{templateTagHtml, map[string]*bintree{}},

@@ -347,6 +347,7 @@ func GenerateHTMLFiles(configFile *ini.File) {
 	CopyFile("./template/script.js", fmt.Sprintf("%s/script.js", publicFolder))
 	CopyFile("./template/style.css", fmt.Sprintf("%s/style.css", publicFolder))
 	CopyFile("./template/favicon.ico", fmt.Sprintf("%s/favicon.ico", publicFolder))
+	CopyFile("./template/robots.txt", fmt.Sprintf("%s/robots.txt", publicFolder))
 
 	CopyAssets(publicFolder)
 
