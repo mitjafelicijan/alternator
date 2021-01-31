@@ -37,6 +37,7 @@ type Post struct {
 	Listing          bool
 	Tags             interface{}
 	Timestamp        int64
+	Posts            []Post
 }
 
 // Index ...
@@ -215,11 +216,38 @@ func GenerateHTMLFiles(configFile *ini.File) {
 			}
 		}
 
+		posts = append([]Post{post}, posts...)
+
+		/*if meta["Listing"].(bool) {
+			//posts = append(posts, post)
+			posts = append([]Post{post}, posts...)
+		} else {
+			log.Println(fmt.Sprintf("Generating %s.html file ... ", post.Slug))
+			output, err := os.Create(fmt.Sprintf("%s/%s", publicFolder, post.Slug))
+			if err != nil {
+				log.Println("Create file: ", err)
+				return
+			}
+
+			err = tpl.ExecuteTemplate(output, "post.html", post)
+			if err != nil {
+				panic(err)
+			}
+
+			output.Close()
+		}*/
+	}
+
+	for _, post := range posts {
 		log.Println(fmt.Sprintf("Generating %s.html file ... ", post.Slug))
 		output, err := os.Create(fmt.Sprintf("%s/%s", publicFolder, post.Slug))
 		if err != nil {
 			log.Println("Create file: ", err)
 			return
+		}
+
+		if post.Listing {
+			post.Posts = posts
 		}
 
 		err = tpl.ExecuteTemplate(output, "post.html", post)
@@ -228,11 +256,6 @@ func GenerateHTMLFiles(configFile *ini.File) {
 		}
 
 		output.Close()
-
-		if meta["Listing"].(bool) {
-			//posts = append(posts, post)
-			posts = append([]Post{post}, posts...)
-		}
 	}
 
 	defaultTitle := configFile.Section("content").Key("title").String()
@@ -294,18 +317,20 @@ func GenerateHTMLFiles(configFile *ini.File) {
 
 	feed.Items = []*feeds.Item{}
 	for _, post := range posts {
-		t, _ := time.Parse(time.RFC3339, post.CreatedRFC3339)
+		if post.Listing {
+			t, _ := time.Parse(time.RFC3339, post.CreatedRFC3339)
 
-		feedItem := &feeds.Item{
-			Title:       post.Title,
-			Link:        &feeds.Link{Href: fmt.Sprintf("%s/%s", domain, post.Slug)},
-			Description: post.Description,
-			Content:     post.Content,
-			Author:      &feeds.Author{Name: author, Email: email},
-			Created:     t,
+			feedItem := &feeds.Item{
+				Title:       post.Title,
+				Link:        &feeds.Link{Href: fmt.Sprintf("%s/%s", domain, post.Slug)},
+				Description: post.Description,
+				Content:     post.Content,
+				Author:      &feeds.Author{Name: author, Email: email},
+				Created:     t,
+			}
+
+			feed.Items = append(feed.Items, feedItem)
 		}
-
-		feed.Items = append(feed.Items, feedItem)
 	}
 
 	rss, err := feed.ToRss()
